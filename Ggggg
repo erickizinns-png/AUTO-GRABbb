@@ -1,0 +1,28 @@
+-- Auto Grab sem UI
+local ProximityPromptService = game:GetService("ProximityPromptService")
+
+local autoGrabEnabled = true  -- já ativado por padrão
+local currentPrompt = nil
+
+-- Loop para segurar o prompt
+task.spawn(function()
+    while task.wait(0.05) do
+        if autoGrabEnabled and currentPrompt then
+            currentPrompt:InputHoldBegin()
+        end
+    end
+end)
+
+-- Quando um prompt aparecer
+ProximityPromptService.PromptShown:Connect(function(prompt)
+    if string.find(string.lower(prompt.ActionText or ""), "steal") then
+        currentPrompt = prompt
+    end
+end)
+
+-- Quando um prompt desaparecer
+ProximityPromptService.PromptHidden:Connect(function(prompt)
+    if prompt == currentPrompt then
+        currentPrompt = nil
+    end
+end)
